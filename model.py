@@ -189,9 +189,15 @@ class DCGAN(object):
     else:
       print(" [!] Load failed...")
 
-    self.save_graph(epoch, save_as_data=True)
-
     for epoch in xrange(config.epoch):
+      vars_to_train = tf.trainable_variables()
+      self.params = {}
+      for param in vars_to_train:
+          target = param.eval()
+          param_name =param.name.replace('/', '_').replace(':0', '')
+          self.params[param_name] = param.eval()
+      self.save_graph(epoch, save_as_data=True)
+
       if config.dataset == 'mnist':
         batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
       else:
@@ -317,7 +323,8 @@ class DCGAN(object):
         if np.mod(counter, 500) == 2:
           self.save(config.checkpoint_dir, counter)
 
-      self.save_graph(epoch, save_as_data=True)
+    self.save_graph(epoch, save_as_data=True)
+      #self.d_save_graph(epoch, save_as_data=True)
 
   def discriminator(self, image, y=None, reuse=False):
     with tf.variable_scope("discriminator") as scope:
@@ -498,23 +505,29 @@ class DCGAN(object):
 
     return X/255.,y_vec
 
-  def g_save_graph(self, epoch, save_as_data=False):
-      g_params = {"h0_w":self.h0_w.eval(), "h0_b":self.h0_b.eval(), "h1_w":self.h1_w.eval(), "h1_b":self.h1_b.eval(), \
-                  "h2_w":self.h2_w.eval(), "h2_b":self.h2_b.eval(), "h3_w":self.h3_w.eval(), "h3_b":self.h3_b.eval(), \
-                  "h4_w":self.h4_w.eval(), "h4_b":self.h4_b.eval()}
+  def save_graph(self, epoch, save_as_data=False):
       if save_as_data:
-          savefunc.save_data_params(type="G", g_params, epoch)
+          for target in self.params:
+              print ("saved",target, str(epoch).zfill(2))
+              np.save('graph/' + target + '_' + str(epoch).zfill(2) +'.npy', self.params[target])
       else:
-          savefunc.save_graph_params(type="G", g_params, epoch)
+          savefunc.save_graph_params(self.params, epoch)
+
+  def g_save_graph(self, epoch, save_as_data=False):
+      if save_as_data:
+          savefunc.save_data_params("G", g_params, epoch)
+      else:
+          savefunc.save_graph_params("G", g_params, epoch)
 
   def d_save_graph(self, epoch, save_as_data=False):
-      g_params = {"h0_w":self.h0_w.eval(), "h0_b":self.h0_b.eval(), "h1_w":self.h1_w.eval(), "h1_b":self.h1_b.eval(), \
-                  "h2_w":self.h2_w.eval(), "h2_b":self.h2_b.eval(), "h3_w":self.h3_w.eval(), "h3_b":self.h3_b.eval(), \
-                  "h4_w":self.h4_w.eval(), "h4_b":self.h4_b.eval()}
+
+      d_params = {"h0_w":self.d_h0_w.eval(), "h0_b":self.d_h0_b.eval(), "h1_w":self.d_h1_w.eval(), "h1_b":self.d_h1_b.eval(), \
+                  "h2_w":self.d_h2_w.eval(), "h2_b":self.d_h2_b.eval(), "h3_w":self.d_h3_w.eval(), "h3_b":self.d_h3_b.eval(), \
+                  "h4_w":self.d_h4_w.eval(), "h4_b":self.d_h4_b.eval()}
       if save_as_data:
-          savefunc.save_data_params(type="D", d_params, epoch)
+          savefunc.save_data_params("D", d_params, epoch)
       else:
-          savefunc.save_graph_params(type="D", d_params, epoch)
+          savefunc.save_graph_params("D", d_params, epoch)
 
 
   @property
