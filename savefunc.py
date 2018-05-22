@@ -59,7 +59,7 @@ def save_graph_params(params, epoch):
     #print ('saved'+str(epoch))
     #plt.show()]
 
-def save_data_params(params, epoch):
+def save_data_params(type, params, epoch):
     w_maxes = [max(params['h0_w'].reshape(-1)), max(params['h1_w'].reshape(-1)), max(params['h2_w'].reshape(-1)), \
                max(params['h3_w'].reshape(-1)), max(params['h4_w'].reshape(-1))]
     w_width = max(w_maxes)
@@ -84,6 +84,6 @@ def save_data_params(params, epoch):
         tmp2_data[tmp2_data == abs_min_data] = 1.0
         tmp2_data[tmp2_data == -abs_min_data] = 1.0
         abs_smin_data = min(abs(tmp2_data))
-        with open('graph/params_abst_' + str(target) + '_' + str(epoch) +'.txt', 'a') as f:
+        with open('graph/' + type + '_params_abst_' + str(target) + '_' + str(epoch) +'.txt', 'a') as f:
             f.write(str(epoch) + "," + str(abs_max_data) + ',' + str(abs_min_data) + ',' + str(abs_smin_data) + '\n')
-        np.save('graph/params_data_' + str(target) + '_' + str(epoch) +'.npy', params[target])
+        np.save('graph/' + type + '_params_data_' + str(target) + '_' + str(epoch) +'.npy', params[target])
