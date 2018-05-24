@@ -54,6 +54,8 @@ class DCGAN(object):
     self.gfc_dim = gfc_dim
     self.dfc_dim = dfc_dim
 
+    self.params = {}
+
     # batch normalization : deals with poor initialization helps gradient flow
     self.d_bn1 = batch_norm(name='d_bn1')
     self.d_bn2 = batch_norm(name='d_bn2')
@@ -149,6 +151,22 @@ class DCGAN(object):
               .minimize(self.d_loss, var_list=self.d_vars)
     g_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
               .minimize(self.g_loss, var_list=self.g_vars)
+    d_grads_cmpt = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
+              .compute_gradients(self.d_loss, self.d_vars)
+    g_grads_cmpt = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
+              .compute_gradients(self.g_loss, self.g_vars)
+
+    self.d_params_name_list = []
+    for target in d_grads_cmpt:
+        self.d_params_name_list.append("grads_" + target[1].name.replace('/', '_').replace(':0', ''))
+        self.d_params_name_list.append(target[1].name.replace('/', '_').replace(':0', ''))
+
+    self.g_params_name_list = []
+    for target in g_grads_cmpt:
+        self.g_params_name_list.append("grads_" + target[1].name.replace('/', '_').replace(':0', ''))
+        self.g_params_name_list.append(target[1].name.replace('/', '_').replace(':0', ''))
+
+
     try:
       tf.global_variables_initializer().run()
     except:
@@ -190,14 +208,6 @@ class DCGAN(object):
       print(" [!] Load failed...")
 
     for epoch in xrange(config.epoch):
-      vars_to_train = tf.trainable_variables()
-      self.params = {}
-      for param in vars_to_train:
-          target = param.eval()
-          param_name =param.name.replace('/', '_').replace(':0', '')
-          self.params[param_name] = param.eval()
-      self.save_graph(epoch, save_as_data=True)
-
       if config.dataset == 'mnist':
         batch_idxs = min(len(self.data_X), config.train_size) // config.batch_size
       else:
@@ -234,7 +244,7 @@ class DCGAN(object):
               self.inputs: batch_images,
               self.z: batch_z,
               self.y:batch_labels,
-            })
+              })
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
@@ -272,6 +282,15 @@ class DCGAN(object):
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={ self.z: batch_z })
           self.writer.add_summary(summary_str, counter)
+          self.g_grads_vars = self.sess.run(g_grads_cmpt,
+            feed_dict={ self.z: batch_z })
+
+          if (counter-2) % 500 == 0:
+              self.d_grads_vars = self.sess.run(d_grads_cmpt,
+                feed_dict={ self.inputs: batch_images, self.z: batch_z })
+              self.g_grads_vars = self.sess.run(g_grads_cmpt,
+                feed_dict={ self.z: batch_z })
+              self.save_npy_data(counter-2)
 
           # Run g_optim twice to make sure that d_loss does not go to zero (different from paper)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
@@ -323,7 +342,7 @@ class DCGAN(object):
         if np.mod(counter, 500) == 2:
           self.save(config.checkpoint_dir, counter)
 
-    self.save_graph(epoch, save_as_data=True)
+    self.save_npy_data(epoch)
       #self.d_save_graph(epoch, save_as_data=True)
 
   def discriminator(self, image, y=None, reuse=False):
@@ -505,13 +524,36 @@ class DCGAN(object):
 
     return X/255.,y_vec
 
-  def save_graph(self, epoch, save_as_data=False):
-      if save_as_data:
-          for target in self.params:
-              print ("saved",target, str(epoch).zfill(2))
-              np.save('graph/' + target + '_' + str(epoch).zfill(2) +'.npy', self.params[target])
-      else:
-          savefunc.save_graph_params(self.params, epoch)
+  def save_npy_data(self, iter):
+      name_counter = 0
+      for param in self.d_grads_vars:
+          #print (param[1])
+          # print (tf.Variable(param[0]).eval())
+          # print ("hoge0")
+          var_target = param[1]
+          grad_target = param[0]
+          grad_name = self.d_params_name_list[name_counter]
+          var_name = self.d_params_name_list[name_counter + 1]
+          self.params[var_name] = var_target
+          self.params[grad_name] = grad_target
+          name_counter += 2
+      name_counter = 0
+      for param in self.g_grads_vars:
+          #print (param[1])
+          # print (tf.Variable(param[0]).eval())
+          # print ("hoge0")
+          var_target = param[1]
+          grad_target = param[0]
+          grad_name = self.g_params_name_list[name_counter]
+          var_name = self.g_params_name_list[name_counter + 1]
+          self.params[var_name] = var_target
+          self.params[grad_name] = grad_target
+          name_counter += 2
+      for target in self.params:
+          #print ("saved",target, str(epoch).zfill(8))
+          np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+      self.params = {}
+      print ("*** Saved npy data ***")
 
   def g_save_graph(self, epoch, save_as_data=False):
       if save_as_data:
