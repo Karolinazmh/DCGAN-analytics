@@ -551,7 +551,7 @@ class DCGAN(object):
           name_counter += 2
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
-          np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+          np.save('graph_small/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
       self.params = {}
       print ("*** Saved npy data ***")
 
