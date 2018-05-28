@@ -36,15 +36,20 @@ if __name__ == '__main__':
     for d_name in d_name_list:
         fp_name = 'discriminator_d_' + d_name
         bp_name = 'grads_discriminator_d_' + d_name
+
+        print ('fp')
         for name in glob.iglob(target_dir_path + fp_name + '_*'):
             iter_num = name.replace(target_dir_path + fp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
+            print (iter_num)
             with open(result_path + fp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
 
+        print ('bp')
         for name in glob.iglob(target_dir_path + bp_name + '_*'):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
+            print (iter_num)
             with open(result_path + bp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
     print ('analysis D... done!')
@@ -53,15 +58,20 @@ if __name__ == '__main__':
     for g_name in g_name_list:
         fp_name = 'generator_g_' + g_name
         bp_name = 'grads_generator_g_' + g_name
+        
+        print ('fp')
         for name in glob.iglob(target_dir_path + fp_name + '_*'):
             iter_num = name.replace(target_dir_path + fp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
+            print (iter_num)
             with open(result_path + fp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
 
+        print ('bp')
         for name in glob.iglob(target_dir_path + bp_name + '_*'):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
+            print (iter_num)
             with open(result_path + bp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
     print ('analysis D... done!')
