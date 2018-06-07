@@ -50,7 +50,7 @@ if __name__ == '__main__':
         print ('bp')
         for name in sorted(glob.iglob(target_dir_path + bp_name + '_*')):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
-            arr_med = analysis_med(name)
+            txt_data = analysis_med(name)
             print (iter_num)
             with open(result_path + bp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + txt_data + '\n')
@@ -64,7 +64,7 @@ if __name__ == '__main__':
         print ('fp')
         for name in sorted(glob.iglob(target_dir_path + fp_name + '_*')):
             iter_num = name.replace(target_dir_path + fp_name + '_', '').replace('.npy', '')
-            arr_med = analysis_med(name)
+            txt_data = analysis_med(name)
             print (iter_num)
             with open(result_path + fp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + txt_data + '\n')
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         print ('bp')
         for name in sorted(glob.iglob(target_dir_path + bp_name + '_*')):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
-            arr_med = analysis_med(name)
+            txt_data = analysis_med(name)
             print (iter_num)
             with open(result_path + bp_name + '.txt', 'a') as f:
                 f.write(iter_num + ',' + txt_data + '\n')
