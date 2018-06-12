@@ -12,6 +12,8 @@ from utils import *
 
 import savefunc
 
+# import adam_quantize as tf.train
+
 def conv_out_size_same(size, stride):
   return int(math.ceil(float(size) / float(stride)))
 
@@ -239,7 +241,7 @@ class DCGAN(object):
 
         if config.dataset == 'mnist':
           # Update D network
-          _, summary_str = self.sess.run([d_optim, self.d_sum],
+          check, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={
               self.inputs: batch_images,
               self.z: batch_z,
@@ -282,8 +284,6 @@ class DCGAN(object):
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={ self.z: batch_z })
           self.writer.add_summary(summary_str, counter)
-          self.g_grads_vars = self.sess.run(g_grads_cmpt,
-            feed_dict={ self.z: batch_z })
 
           if (counter-2) % 1000 == 0:
               self.d_grads_vars = self.sess.run(d_grads_cmpt,
@@ -302,6 +302,8 @@ class DCGAN(object):
           errG = self.g_loss.eval({self.z: batch_z})
 
         counter += 1
+        with open('d_g_loss.txt', 'a') as f:
+            f.write(str(counter-3)+','+str(errD_fake+errD_real)+','+str(errG)+'\n')
         #self.save_graph(epoch, save_as_data=True)
         # print ("h0 type",type(self.h0_w))
         # h0_w_holder = self.h0_w.eval()                                                                       # add by yuma
@@ -551,7 +553,11 @@ class DCGAN(object):
           name_counter += 2
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
+<<<<<<< HEAD
           np.save('graph_short/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+=======
+          np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+>>>>>>> 7dd7335d8fe90838dc3340ddc49e3be349434c79
       self.params = {}
       print (str(iter).zfill(8),"     *** Saved npy data ***")
 
