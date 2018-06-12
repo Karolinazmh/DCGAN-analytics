@@ -285,7 +285,7 @@ class DCGAN(object):
           self.g_grads_vars = self.sess.run(g_grads_cmpt,
             feed_dict={ self.z: batch_z })
 
-          if (counter-2) % 500 == 0:
+          if (counter-2) % 1000 == 0:
               self.d_grads_vars = self.sess.run(d_grads_cmpt,
                 feed_dict={ self.inputs: batch_images, self.z: batch_z })
               self.g_grads_vars = self.sess.run(g_grads_cmpt,
@@ -342,7 +342,7 @@ class DCGAN(object):
         if np.mod(counter, 500) == 2:
           self.save(config.checkpoint_dir, counter)
 
-    self.save_npy_data(epoch)
+    #self.save_npy_data(epoch)
       #self.d_save_graph(epoch, save_as_data=True)
 
   def discriminator(self, image, y=None, reuse=False):
@@ -551,9 +551,9 @@ class DCGAN(object):
           name_counter += 2
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
-          np.save('graph_small/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+          np.save('graph_short/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
       self.params = {}
-      print ("*** Saved npy data ***")
+      print (str(iter).zfill(8),"     *** Saved npy data ***")
 
   def g_save_graph(self, epoch, save_as_data=False):
       if save_as_data:
