@@ -554,10 +554,14 @@ class DCGAN(object):
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
 <<<<<<< HEAD
+<<<<<<< HEAD
           np.save('graph_short/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
 =======
           np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
 >>>>>>> 7dd7335d8fe90838dc3340ddc49e3be349434c79
+=======
+          np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+>>>>>>> 0d180013e908ebdde6d2bdece19af3b116209c5a
       self.params = {}
       print (str(iter).zfill(8),"     *** Saved npy data ***")
 
