@@ -40,7 +40,7 @@ class DCGAN(object):
       dfc_dim: (optional) Dimension of discrim units for fully connected layer. [1024]
       c_dim: (optional) Dimension of image color. For grayscale input, set to 1. [3]
     """
-    self.save_path = data_save_dir
+    self.save_path = data_save_dir + '/'
     if os.path.exists(self.save_path):
         if os.path.exists('bu_' + self.save_path):
             shutil.rmtree('bu_' + self.save_path)
