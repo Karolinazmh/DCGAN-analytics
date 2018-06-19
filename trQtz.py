@@ -1,7 +1,7 @@
 import numpy as np
 np.set_printoptions(threshold=np.inf)
 
-def transQuantization(data, e = 5, m = 10, b = 15):
+def transQuantization(data, e = 4, m = 10, b = 7):
     th_p_up = 2 ** (e) - 1 - b
     th_p_lo = - b
     #print ('up:',th_p_up,'lo:',th_p_lo)
