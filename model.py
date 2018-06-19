@@ -12,6 +12,8 @@ from utils import *
 
 import savefunc
 
+from trQtz import transQuantization
+
 # import adam_quantize as tf.train
 
 def conv_out_size_same(size, stride):
@@ -142,9 +144,12 @@ class DCGAN(object):
     self.d_loss_sum = scalar_summary("d_loss", self.d_loss)
 
     t_vars = tf.trainable_variables()
+    print (len(t_vars))
 
     self.d_vars = [var for var in t_vars if 'd_' in var.name]
+
     self.g_vars = [var for var in t_vars if 'g_' in var.name]
+    print (len(self.g_vars))
 
     self.saver = tf.train.Saver()
 
@@ -241,6 +246,7 @@ class DCGAN(object):
 
         if config.dataset == 'mnist':
           # Update D network
+          self.quantize_params(self.d_vars)
           check, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={
               self.inputs: batch_images,
@@ -250,6 +256,7 @@ class DCGAN(object):
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
+          self.quantize_params(self.g_vars)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={
               self.z: batch_z,
@@ -553,7 +560,7 @@ class DCGAN(object):
           name_counter += 2
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
-          np.save('graph/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+          np.save('mnist_16bit/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
       self.params = {}
       print ("*** Saved npy data ***")
 
@@ -572,6 +579,12 @@ class DCGAN(object):
           savefunc.save_data_params("D", d_params, epoch)
       else:
           savefunc.save_graph_params("D", d_params, epoch)
+
+  def quantize_params(self, var_list):
+      for param in var_list:
+          qtz_op = param.assign(transQuantization(param.eval()))
+          self.sess.run(qtz_op)
+      return var_list
 
 
   @property
