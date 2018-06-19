@@ -7,6 +7,8 @@ import tensorflow as tf
 import numpy as np
 from six.moves import xrange
 
+import shutil
+
 from ops import *
 from utils import *
 
@@ -93,6 +95,20 @@ class DCGAN(object):
 
     self.build_model()
 
+    self.save_path = "mnist_16bit/"
+    if os.path.exists(self.save_path):
+        if os.path.exists('bu_' + self.save_path):
+            shutil.rmtree('bu_' + self.save_path)
+            shutil.copytree(self.save_path, 'bu_' + self.save_path)
+        else:
+            shutil.copytree(self.save_path, 'bu_' + self.save_path)
+        shutil.rmtree(self.save_path)
+        os.mkdir(self.save_path)
+        print ('remove past, made bu')
+    else:
+        os.mkdir(self.save_path)
+        print ('made')
+
   def build_model(self):
     if self.y_dim:
       self.y = tf.placeholder(tf.float32, [self.batch_size, self.y_dim], name='y')
@@ -144,12 +160,8 @@ class DCGAN(object):
     self.d_loss_sum = scalar_summary("d_loss", self.d_loss)
 
     t_vars = tf.trainable_variables()
-    print (len(t_vars))
-
     self.d_vars = [var for var in t_vars if 'd_' in var.name]
-
     self.g_vars = [var for var in t_vars if 'g_' in var.name]
-    print (len(self.g_vars))
 
     self.saver = tf.train.Saver()
 
@@ -557,7 +569,7 @@ class DCGAN(object):
           name_counter += 2
       for target in self.params:
           #print ("saved",target, str(epoch).zfill(8))
-          np.save('mnist_16bit/' + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
+          np.save(self.save_path + target + '_' + str(iter).zfill(8) +'.npy', self.params[target])
       self.params = {}
       print ("*** Saved npy data ***")
 
