@@ -313,10 +313,10 @@ class DCGAN(object):
           errG = self.g_loss.eval({self.z: batch_z})
 
         counter += 1
-        if (counter-2) % 500 == 0 and counter > 2:
-            self.d_grads_vars = self.sess.run(d_grads_cmpt, feed_dict={ self.inputs: batch_images, self.z: batch_z })
-            self.g_grads_vars = self.sess.run(g_grads_cmpt, feed_dict={ self.z: batch_z })
-            self.save_npy_data(counter-2)
+        # if (counter-2) % 500 == 0 and counter > 2:
+        #     self.d_grads_vars = self.sess.run(d_grads_cmpt, feed_dict={ self.inputs: batch_images, self.z: batch_z })
+        #     self.g_grads_vars = self.sess.run(g_grads_cmpt, feed_dict={ self.z: batch_z })
+        #     self.save_npy_data(counter-2)
         with open(self.save_path + 'd_g_loss.txt', 'a') as f:
             f.write(str(counter-2)+','+str(errD_fake+errD_real)+','+str(errG)+'\n')
         #self.save_graph(epoch, save_as_data=True)
