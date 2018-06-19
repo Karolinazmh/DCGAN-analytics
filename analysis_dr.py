@@ -38,7 +38,7 @@ if __name__ == '__main__':
         bp_name = 'grads_discriminator_d_' + d_name
 
         print ('fp')
-        for name in glob.iglob(target_dir_path + fp_name + '_*'):
+        for name in sorted(glob.iglob(target_dir_path + fp_name + '_*')):
             iter_num = name.replace(target_dir_path + fp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
             print (iter_num)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
 
         print ('bp')
-        for name in glob.iglob(target_dir_path + bp_name + '_*'):
+        for name in sorted(glob.iglob(target_dir_path + bp_name + '_*')):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
             print (iter_num)
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         bp_name = 'grads_generator_g_' + g_name
         
         print ('fp')
-        for name in glob.iglob(target_dir_path + fp_name + '_*'):
+        for name in sorted(glob.iglob(target_dir_path + fp_name + '_*')):
             iter_num = name.replace(target_dir_path + fp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
             print (iter_num)
@@ -68,7 +68,7 @@ if __name__ == '__main__':
                 f.write(iter_num + ',' + str(arr_min) + ',' + str(arr_max) + ',' + str(arr_dr) + '\n')
 
         print ('bp')
-        for name in glob.iglob(target_dir_path + bp_name + '_*'):
+        for name in sorted(glob.iglob(target_dir_path + bp_name + '_*')):
             iter_num = name.replace(target_dir_path + bp_name + '_', '').replace('.npy', '')
             arr_min, arr_max, arr_dr = analysis_dr(name)
             print (iter_num)
