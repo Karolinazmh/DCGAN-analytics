@@ -359,7 +359,7 @@ class DCGAN(object):
         if np.mod(counter, 500) == 2:
           self.save(config.checkpoint_dir, counter)
 
-    self.save_npy_data(epoch)
+    #self.save_npy_data(epoch)
       #self.d_save_graph(epoch, save_as_data=True)
 
   def discriminator(self, image, y=None, reuse=False):
