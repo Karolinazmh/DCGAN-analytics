@@ -49,11 +49,9 @@ class DCGAN(object):
             shutil.copytree(self.save_path, 'bu_' + self.save_path)
         shutil.rmtree(self.save_path)
         os.mkdir(self.save_path)
-        os.mkdir(self.save_path + config.sample_dir)
         print ('remove past, made bu')
     else:
         os.mkdir(self.save_path)
-        os.mkdir(self.save_path + config.sample_dir)
         print ('made')
 
     self.sess = sess
@@ -168,6 +166,15 @@ class DCGAN(object):
     self.saver = tf.train.Saver()
 
   def train(self, config):
+    self.img_save_dir = self.save_path + config.sample_dir
+    if os.path.exists(self.img_save_dir):
+        shutil.rmtree(self.img_save_dir)
+        os.mkdir(self.img_save_dir)
+        #print ('remove past, made bu')
+    else:
+        os.mkdir(self.img_save_dir)
+        #print ('made')
+
     d_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
               .minimize(self.d_loss, var_list=self.d_vars)
     g_optim = tf.train.AdamOptimizer(config.learning_rate, beta1=config.beta1) \
