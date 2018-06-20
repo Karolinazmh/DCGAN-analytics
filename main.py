@@ -59,8 +59,8 @@ def main(_):
           input_fname_pattern=FLAGS.input_fname_pattern,
           crop=FLAGS.crop,
           data_save_dir=FLAGS.data_save_dir,
-          checkpoint_dir=FLAGS.data_save_dir + '/' + FLAGS.checkpoint_dir,
-          sample_dir=FLAGS.data_save_dir + '/' + FLAGS.sample_dir)
+          checkpoint_dir=FLAGS.checkpoint_dir,
+          sample_dir=FLAGS.sample_dir)
     else:
       dcgan = DCGAN(
           sess,

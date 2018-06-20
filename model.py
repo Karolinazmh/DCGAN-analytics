@@ -92,7 +92,7 @@ class DCGAN(object):
 
     self.dataset_name = dataset_name
     self.input_fname_pattern = input_fname_pattern
-    self.checkpoint_dir = checkpoint_dir
+    self.checkpoint_dir = self.save_path + checkpoint_dir
 
     if self.dataset_name == 'mnist':
       self.data_X, self.data_y = self.load_mnist()
@@ -339,7 +339,7 @@ class DCGAN(object):
               }
             )
             save_images(samples, image_manifold_size(samples.shape[0]),
-                  './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                  './{}/train_{:02d}_{:04d}.png'.format(self.save_path + config.sample_dir, epoch, idx))
             print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
           else:
             try:
