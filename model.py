@@ -257,7 +257,7 @@ class DCGAN(object):
 
         if config.dataset == 'mnist':
           # Update D network
-          #self.quantize_params(self.d_vars)
+          self.quantize_params(self.d_vars)
           check, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={
               self.inputs: batch_images,
@@ -267,7 +267,7 @@ class DCGAN(object):
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
-          #self.quantize_params(self.g_vars)
+          self.quantize_params(self.g_vars)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={
               self.z: batch_z,
@@ -313,7 +313,7 @@ class DCGAN(object):
           errG = self.g_loss.eval({self.z: batch_z})
 
         counter += 1
-        if (counter-2) % 500 == 0:
+        if (counter-2) % 100 == 0:
         #     self.d_grads_vars = self.sess.run(d_grads_cmpt, feed_dict={ self.inputs: batch_images, self.z: batch_z })
         #     self.g_grads_vars = self.sess.run(g_grads_cmpt, feed_dict={ self.z: batch_z })
         #     self.save_npy_data(counter-2)

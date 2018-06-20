@@ -37,7 +37,7 @@ def transQuantization(data, e = 5, m = 10, b = 15):
     #print (-m_tmp[(tmp_data > 1) & (m_tmp > 0) & (np.floor(np.log2(tmp_data)) >= th_p_lo) & (np.floor(np.log2(tmp_data)) <= th_p_up)])
     #print  /  (2 ** (-m_tmp[(tmp_data > 1) & (m_tmp > 0) & (np.floor(np.log2(tmp_data)) >= th_p_lo) & (np.floor(np.log2(tmp_data)) <= th_p_up_up)])))))
     #print (tmp_data_fra)
-    diff = data - data_out
+    #diff = data - data_out
     # print (data[1])
     # print (data_out[1])
     # print ('quantize diff max: ', np.max(diff))
