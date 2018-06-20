@@ -49,9 +49,11 @@ class DCGAN(object):
             shutil.copytree(self.save_path, 'bu_' + self.save_path)
         shutil.rmtree(self.save_path)
         os.mkdir(self.save_path)
+        os.mkdir(self.save_path + config.sample_dir)
         print ('remove past, made bu')
     else:
         os.mkdir(self.save_path)
+        os.mkdir(self.save_path + config.sample_dir)
         print ('made')
 
     self.sess = sess
