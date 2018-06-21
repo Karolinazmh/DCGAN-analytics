@@ -365,8 +365,8 @@ class DCGAN(object):
             except:
               print("one pic error!...")
 
-        if np.mod(counter, 500) == 2:
-          self.save(config.checkpoint_dir, counter)
+        # if np.mod(counter, 500) == 2:
+        #   self.save(config.checkpoint_dir, counter)
 
     #self.save_npy_data(epoch)
       #self.d_save_graph(epoch, save_as_data=True)
