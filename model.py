@@ -599,8 +599,9 @@ class DCGAN(object):
 
   def quantize_params(self, var_list):
       for param in var_list:
-          qtz_op = param.assign(transQuantization(param.eval()))
-          self.sess.run(qtz_op)
+          if 'w:0' in param.name or 'bias' in param.name:
+              qtz_op = param.assign(transQuantization(param.eval()))
+              self.sess.run(qtz_op)
       return var_list
 
 
