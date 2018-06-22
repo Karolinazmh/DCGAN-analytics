@@ -54,6 +54,9 @@ class DCGAN(object):
         os.mkdir(self.save_path)
         print ('made')
 
+    self.d_offset = -7
+    self.g_offset = -7
+
     self.sess = sess
     self.crop = crop
 
@@ -266,7 +269,7 @@ class DCGAN(object):
 
         if config.dataset == 'mnist':
           # Update D network
-          self.quantize_params(self.d_vars)
+          self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
           check, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={
               self.inputs: batch_images,
@@ -276,7 +279,7 @@ class DCGAN(object):
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
-          self.quantize_params(self.g_vars)
+          self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={
               self.z: batch_z,
@@ -327,15 +330,15 @@ class DCGAN(object):
         #     self.g_grads_vars = self.sess.run(g_grads_cmpt, feed_dict={ self.z: batch_z })
         #     self.save_npy_data(counter-2)
             with open(self.save_path + 'd_g_loss.txt', 'a') as f:
-                f.write(str(counter-2)+','+str(errD_fake+errD_real)+','+str(errG)+'\n')
+                f.write(str(counter-2)+','+str(errD_fake+errD_real)+','+str(errG)+','+str(self.d_offset)+','+str(self.g_offset)+'\n')
         #self.save_graph(epoch, save_as_data=True)
         # print ("h0 type",type(self.h0_w))
         # h0_w_holder = self.h0_w.eval()                                                                       # add by yuma
         # print (h0_w_holder)
         # print (h0_w_holder.shape)
-        print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f" \
+        print("Epoch: [%2d] [%4d/%4d] time: %4.4f, d_loss: %.8f, g_loss: %.8f, d_offset: %d, g_offset: %d" \
           % (epoch, idx, batch_idxs,
-            time.time() - start_time, errD_fake+errD_real, errG))
+            time.time() - start_time, errD_fake+errD_real, errG, self.d_offset, self.g_offset))
 
         if np.mod(counter, 100) == 1:
           if config.dataset == 'mnist':
@@ -597,12 +600,21 @@ class DCGAN(object):
       else:
           savefunc.save_graph_params("D", d_params, epoch)
 
-  def quantize_params(self, var_list):
+  def quantize_params(self, var_list, input_offset):
+      offset_kouho = []
       for param in var_list:
           if 'w:0' in param.name or 'bias' in param.name:
-              qtz_op = param.assign(transQuantization(param.eval()))
+              param_for_calc = param.eval()
+              param_for_calc[param_for_calc<0] *= (-1)
+              if len(param_for_calc[param_for_calc!=0]) != 0:
+                  offset_tmp = np.median(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
+                  # log2_max = np.max(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
+                  # log2_min =np.min(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
+                  offset_kouho.append(offset_tmp)
+              qtz_op = param.assign(transQuantization(param.eval(), e=5, m=10, b=input_offset))
               self.sess.run(qtz_op)
-      return var_list
+      offset = np.floor(np.median(np.array(offset_kouho)))
+      return offset
 
 
   @property
