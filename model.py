@@ -615,7 +615,7 @@ class DCGAN(object):
                   # log2_max = np.max(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
                   # log2_min =np.min(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
                   offset_kouho.append(offset_tmp)
-              qtz_op = param.assign(transQuantization(param.eval(), e=2, m=10, b=1))
+              qtz_op = param.assign(transQuantization(param.eval(), e=2, m=10, b=input_offset))
               self.sess.run(qtz_op)
       offset = np.floor(np.median(np.array(offset_kouho)))
       return offset
