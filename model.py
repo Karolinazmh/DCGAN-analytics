@@ -626,7 +626,7 @@ class DCGAN(object):
               if not self.mo_op:
                   qtz_op = param.assign(transQuantization(param.eval(), e=self.qtz_e, m=self.qtz_m, b=2**(self.qtz_e-1)-1))
               else:
-                  qtz_op = param.assign(transQuantization(param.eval(), e=self.qtz_e, m=self.qtz_m, b=input_offset))
+                  qtz_op = param.assign(transQuantization(param.eval(), e=self.qtz_e, m=self.qtz_m, b=-input_offset))
               self.sess.run(qtz_op)
       offset = np.floor(np.median(np.array(offset_kouho)))
       return offset
