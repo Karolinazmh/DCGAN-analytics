@@ -26,7 +26,8 @@ class DCGAN(object):
          batch_size=64, sample_num = 64, output_height=64, output_width=64,
          y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
          gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
-         input_fname_pattern='*.jpg', data_save_dir=None, checkpoint_dir=None, sample_dir=None):
+         input_fname_pattern='*.jpg', data_save_dir=None, checkpoint_dir=None, sample_dir=None,
+         qtz_e=5, qtz_m=10, mo_op=False):
     """
 
     Args:
@@ -56,6 +57,10 @@ class DCGAN(object):
 
     self.d_offset = -7
     self.g_offset = -7
+
+    self.qtz_e = qtz_e
+    self.qtz_m = qtz_m
+    self.mo_op = mo_op
 
     self.seed = 0
 
@@ -615,7 +620,10 @@ class DCGAN(object):
                   # log2_max = np.max(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
                   # log2_min =np.min(np.floor(np.log2(param_for_calc[param_for_calc!=0])))
                   offset_kouho.append(offset_tmp)
-              qtz_op = param.assign(transQuantization(param.eval(), e=2, m=10, b=input_offset))
+              if not self.mo_op:
+                  qtz_op = param.assign(transQuantization(param.eval(), e=self.qtz_e, m=self.qtz_m, b=2**(self.qtz_e-1)-1))
+              else:
+                  qtz_op = param.assign(transQuantization(param.eval(), e=self.qtz_e, m=self.qtz_m, b=input_offset))
               self.sess.run(qtz_op)
       offset = np.floor(np.median(np.array(offset_kouho)))
       return offset

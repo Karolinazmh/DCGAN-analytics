@@ -25,6 +25,9 @@ flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image s
 flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("crop", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
+flags.DEFINE_boolean("mo_op", False, "True for moving offset, False for nothing [False]")
+flags.DEFINE_integer("qtz_e", 5, "quantize exponent [5]")
+flags.DEFINE_integer("qtz_m", 10, "quantize mantissa [10]")
 FLAGS = flags.FLAGS
 
 def main(_):
@@ -60,7 +63,10 @@ def main(_):
           crop=FLAGS.crop,
           data_save_dir=FLAGS.data_save_dir,
           checkpoint_dir=FLAGS.checkpoint_dir,
-          sample_dir=FLAGS.sample_dir)
+          sample_dir=FLAGS.sample_dir,
+          qtz_e=FLAGS.qtz_e,
+          qtz_m=FLAGS.qtz_m,
+          mo_op=FLAGS.mo_op)
     else:
       dcgan = DCGAN(
           sess,
