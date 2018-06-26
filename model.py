@@ -27,7 +27,7 @@ class DCGAN(object):
          y_dim=None, z_dim=100, gf_dim=64, df_dim=64,
          gfc_dim=1024, dfc_dim=1024, c_dim=3, dataset_name='default',
          input_fname_pattern='*.jpg', data_save_dir=None, checkpoint_dir=None, sample_dir=None,
-         qtz_e=5, qtz_m=10, mo_op=False):
+         qtz_e=5, qtz_m=10, mo_op=False, noQtz=False):
     """
 
     Args:
@@ -61,6 +61,7 @@ class DCGAN(object):
     self.qtz_e = qtz_e
     self.qtz_m = qtz_m
     self.mo_op = mo_op
+    self.noQtz = noQtz
 
     self.seed = 0
 
@@ -278,7 +279,8 @@ class DCGAN(object):
 
         if config.dataset == 'mnist':
           # Update D network
-          self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
+          if not self.noQtz:
+              self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
           check, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={
               self.inputs: batch_images,
@@ -288,7 +290,8 @@ class DCGAN(object):
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
-          self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
+          if not self.noQtz:
+              self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={
               self.z: batch_z,

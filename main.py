@@ -28,6 +28,7 @@ flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothin
 flags.DEFINE_boolean("mo_op", False, "True for moving offset, False for nothing [False]")
 flags.DEFINE_integer("qtz_e", 5, "quantize exponent [5]")
 flags.DEFINE_integer("qtz_m", 10, "quantize mantissa [10]")
+flags.DEFINE_boolean("noQtz", False, "True for no quantization [False]")
 FLAGS = flags.FLAGS
 
 def main(_):
@@ -66,7 +67,8 @@ def main(_):
           sample_dir=FLAGS.sample_dir,
           qtz_e=FLAGS.qtz_e,
           qtz_m=FLAGS.qtz_m,
-          mo_op=FLAGS.mo_op)
+          mo_op=FLAGS.mo_op,
+          noQtz=FLAGS.noQtz)
     else:
       dcgan = DCGAN(
           sess,
