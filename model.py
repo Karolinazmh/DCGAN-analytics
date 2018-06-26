@@ -57,6 +57,8 @@ class DCGAN(object):
     self.d_offset = -7
     self.g_offset = -7
 
+    self.seed = 0
+
     self.sess = sess
     self.crop = crop
 
@@ -264,8 +266,10 @@ class DCGAN(object):
           else:
             batch_images = np.array(batch).astype(np.float32)
 
+        np.random.seed(self.seed)
         batch_z = np.random.uniform(-1, 1, [config.batch_size, self.z_dim]) \
               .astype(np.float32)
+        self.seed+=1
 
         if config.dataset == 'mnist':
           # Update D network
