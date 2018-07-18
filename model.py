@@ -318,11 +318,15 @@ class DCGAN(object):
           })
         else:
           # Update D network
+          if not self.noQtz:
+              self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
           _, summary_str = self.sess.run([d_optim, self.d_sum],
             feed_dict={ self.inputs: batch_images, self.z: batch_z })
           self.writer.add_summary(summary_str, counter)
 
           # Update G network
+          if not self.noQtz:
+              self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
           _, summary_str = self.sess.run([g_optim, self.g_sum],
             feed_dict={ self.z: batch_z })
           self.writer.add_summary(summary_str, counter)
@@ -375,7 +379,7 @@ class DCGAN(object):
                 },
               )
               save_images(samples, image_manifold_size(samples.shape[0]),
-                    './{}/train_{:02d}_{:04d}.png'.format(config.sample_dir, epoch, idx))
+                    './{}/train_{:02d}_{:04d}.png'.format(self.save_path + config.sample_dir, epoch, idx))
               print("[Sample] d_loss: %.8f, g_loss: %.8f" % (d_loss, g_loss))
             except:
               print("one pic error!...")

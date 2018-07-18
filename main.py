@@ -82,7 +82,12 @@ def main(_):
           input_fname_pattern=FLAGS.input_fname_pattern,
           crop=FLAGS.crop,
           checkpoint_dir=FLAGS.checkpoint_dir,
-          sample_dir=FLAGS.sample_dir)
+          sample_dir=FLAGS.sample_dir,
+          data_save_dir=FLAGS.data_save_dir,
+          qtz_e=FLAGS.qtz_e,
+          qtz_m=FLAGS.qtz_m,
+          mo_op=FLAGS.mo_op,
+          noQtz=FLAGS.noQtz)
 
     show_all_variables()
 
