@@ -385,6 +385,9 @@ class DCGAN(object):
               print("one pic error!...")
 
         if (counter - 2) % 5500 == 0:
+            if not self.noQtz:
+                self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
+                self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
             self.save(os.path.join(config.data_save_dir, config.checkpoint_dir), counter)
 
     #self.save_npy_data(epoch)
