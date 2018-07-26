@@ -384,6 +384,12 @@ class DCGAN(object):
             except:
               print("one pic error!...")
 
+        if (counter - 2) == 100:
+            if not self.noQtz:
+                self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
+                self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
+            self.save(os.path.join(config.data_save_dir, config.checkpoint_dir), counter)
+
         if (counter - 2) % 5500 == 0:
             if not self.noQtz:
                 self.d_offset = self.quantize_params(self.d_vars, self.d_offset)
@@ -486,8 +492,9 @@ class DCGAN(object):
   def sampler(self, z, y=None):
     with tf.variable_scope("generator") as scope:
       scope.reuse_variables()
-
       if not self.y_dim:
+        # if not self.noQtz:
+        #     self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
         s_h, s_w = self.output_height, self.output_width
         s_h2, s_w2 = conv_out_size_same(s_h, 2), conv_out_size_same(s_w, 2)
         s_h4, s_w4 = conv_out_size_same(s_h2, 2), conv_out_size_same(s_w2, 2)
@@ -513,6 +520,8 @@ class DCGAN(object):
 
         return tf.nn.tanh(h4)
       else:
+        # if not self.noQtz:
+        #     self.g_offset = self.quantize_params(self.g_vars, self.g_offset)
         s_h, s_w = self.output_height, self.output_width
         s_h2, s_h4 = int(s_h/2), int(s_h/4)
         s_w2, s_w4 = int(s_w/2), int(s_w/4)
@@ -667,6 +676,9 @@ class DCGAN(object):
       self.saver.restore(self.sess, os.path.join(checkpoint_dir, ckpt_name))
       counter = int(next(re.finditer("(\d+)(?!.*\d)",ckpt_name)).group(0))
       print(" [*] Success to read {}".format(ckpt_name))
+      t_vars_t = tf.trainable_variables()
+      self.g_vars_t = [var for var in t_vars_t if 'g_' in var.name]
+      self.g_offset_t = self.quantize_params(self.g_vars_t, 1)
       return True, counter
     else:
       print(" [*] Failed to find a checkpoint")
